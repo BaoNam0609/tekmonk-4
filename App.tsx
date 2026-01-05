@@ -5,6 +5,7 @@ import VietnamMap from './components/VietnamMap';
 import AIPlanner from './components/AIPlanner';
 import FoodExplorer from './components/FoodExplorer';
 import Vietnam101 from './components/Vietnam101';
+import { VIETNAM_PLACES } from './constants';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -51,26 +52,22 @@ const App: React.FC = () => {
               <VietnamMap />
             </section>
 
-            {/* Quick Destinations Scroll */}
+            {/* Quick Destinations Scroll - Dynamic Data */}
             <section className="space-y-4">
               <div className="flex items-center justify-between px-6">
                 <h2 className="text-xl font-bold text-slate-800">Top điểm đến</h2>
                 <span className="text-xs font-bold text-red-600">Xem hết</span>
               </div>
               <div className="flex overflow-x-auto px-6 space-x-4 no-scrollbar pb-4">
-                {[
-                  { name: 'Vịnh Hạ Long', tag: 'Kỳ quan', img: 'https://images.unsplash.com/photo-1524230507669-5ff97982bb5e?q=80&w=400' },
-                  { name: 'Phố cổ Hội An', tag: 'Văn hóa', img: 'https://images.unsplash.com/photo-1599708153386-62e2d0903332?q=80&w=400' },
-                  { name: 'Đà Lạt', tag: 'Lãng mạn', img: 'https://images.unsplash.com/photo-1585038896038-5117ad133671?q=80&w=400' }
-                ].map(item => (
-                  <div key={item.name} className="flex-shrink-0 w-64 h-80 relative rounded-[2rem] overflow-hidden shadow-xl active:scale-95 transition-transform">
-                    <img src={item.img} alt={item.name} className="absolute inset-0 w-full h-full object-cover" />
+                {VIETNAM_PLACES.slice(0, 6).map(place => (
+                  <div key={place.id} className="flex-shrink-0 w-64 h-80 relative rounded-[2rem] overflow-hidden shadow-xl active:scale-95 transition-transform">
+                    <img src={place.image} alt={place.name} className="absolute inset-0 w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div className="absolute bottom-6 left-6 right-6">
                       <span className="bg-red-600 text-[10px] font-black uppercase text-white px-2 py-1 rounded-lg mb-2 inline-block">
-                        {item.tag}
+                        {place.region}
                       </span>
-                      <h4 className="text-xl font-bold text-white">{item.name}</h4>
+                      <h4 className="text-xl font-bold text-white">{place.name}</h4>
                     </div>
                   </div>
                 ))}

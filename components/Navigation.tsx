@@ -16,23 +16,27 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-xl border-t border-slate-100 pb-safe shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-      <div className="flex justify-around items-center h-16 max-w-md mx-auto">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-[9999] bg-white/95 backdrop-blur-2xl border-t border-slate-100 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.1)]">
+      <div className="flex justify-around items-center h-20 px-2">
         {tabs.map(tab => (
           <button
             key={tab.label}
             onClick={() => {
               setActiveTab(tab.id);
               if (tab.isMap) {
-                document.getElementById('map-section')?.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => {
+                  document.getElementById('map-section')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
               }
             }}
-            className={`flex flex-col items-center justify-center w-full transition-all ${
+            className={`flex flex-col items-center justify-center w-full transition-all duration-300 ${
               activeTab === tab.id ? 'text-red-600 scale-110' : 'text-slate-400'
             }`}
           >
-            <span className="text-xl mb-1">{tab.icon}</span>
-            <span className="text-[10px] font-bold uppercase tracking-tighter">{tab.label}</span>
+            <span className="text-2xl mb-1">{tab.icon}</span>
+            <span className={`text-[9px] font-black uppercase tracking-tighter ${activeTab === tab.id ? 'opacity-100' : 'opacity-60'}`}>
+              {tab.label}
+            </span>
           </button>
         ))}
       </div>

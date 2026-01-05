@@ -14,6 +14,12 @@ const VietnamMap: React.FC = () => {
   const [selectedCity, setSelectedCity] = useState<any>(null);
   const [showSheet, setShowSheet] = useState(false);
 
+  // Tọa độ bao quanh Việt Nam (SouthWest, NorthEast)
+  const VIETNAM_BOUNDS = [
+    [8.0, 102.0], // Điểm phía Tây Nam (gần Cà Mau/Vịnh Thái Lan)
+    [23.5, 110.0]  // Điểm phía Đông Bắc (gần Lũng Cú/Biển Đông)
+  ];
+
   // Danh sách tọa độ GPS thực tế của các địa danh
   const hotspots = [
     { id: 'hanoi', name: 'Hà Nội', lat: 21.0285, lng: 105.8542, short: 'Cố đô nghìn năm văn hiến' },
@@ -30,11 +36,15 @@ const VietnamMap: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    // Khởi tạo bản đồ Leaflet
+    // Khởi tạo bản đồ Leaflet với các ràng buộc chặt chẽ
     mapRef.current = L.map(containerRef.current, {
       center: [16.0, 107.5], // Tâm Việt Nam
       zoom: 6,
-      zoomControl: false, // Tắt điều khiển zoom mặc định để giao diện sạch hơn
+      minZoom: 5.5, // Không cho thu nhỏ quá nhiều
+      maxZoom: 18,
+      maxBounds: VIETNAM_BOUNDS, // Cố định vùng hiển thị
+      maxBoundsViscosity: 1.0, // Độ "cứng" của biên (1.0 là không cho kéo ra ngoài luôn)
+      zoomControl: false, 
       attributionControl: false
     });
 
@@ -54,7 +64,6 @@ const VietnamMap: React.FC = () => {
 
       const marker = L.marker([spot.lat, spot.lng], { icon: customIcon }).addTo(mapRef.current);
 
-      // Pop-up nhanh khi click vào marker
       marker.bindPopup(`
         <div class="p-3 min-w-[120px]">
           <h5 class="font-bold text-slate-900 text-xs mb-0.5">${spot.name}</h5>
@@ -68,7 +77,6 @@ const VietnamMap: React.FC = () => {
         offset: [0, -10]
       });
 
-      // Lắng nghe sự kiện click trên bản đồ
       marker.on('popupopen', () => {
         const btn = document.querySelector('.btn-more');
         if (btn) {
@@ -95,12 +103,6 @@ const VietnamMap: React.FC = () => {
     const result = await searchVietnamPlaces(searchQuery);
     setDiscoveryResult(result);
     setLoading(false);
-
-    // Di chuyển bản đồ đến điểm tìm kiếm đầu tiên nếu có
-    if (result && result.places.length > 0) {
-      // Vì Gemini Grounding không trả về lat/lng trực tiếp trong chunk, 
-      // ở bản demo này ta tập trung vào UI. Trong thực tế sẽ gọi Geocoding.
-    }
   };
 
   const handleHotspotClick = (spot: any) => {
@@ -118,7 +120,6 @@ const VietnamMap: React.FC = () => {
 
   return (
     <div className="relative w-full h-[85vh] bg-slate-100 rounded-[3rem] overflow-hidden shadow-2xl border-2 border-white/50">
-      {/* Container của Leaflet */}
       <div ref={containerRef} className="w-full h-full z-0" />
 
       {/* Overlay: AI Search Bar */}
@@ -165,9 +166,9 @@ const VietnamMap: React.FC = () => {
 
       {/* Bottom Sheet (City Details) */}
       {showSheet && selectedCity && (
-        <div className="absolute inset-0 z-[2000] bg-slate-900/30 backdrop-blur-[1px]" onClick={() => setShowSheet(false)}>
+        <div className="absolute inset-0 z-[2000] bg-slate-900/40 backdrop-blur-[2px]" onClick={() => setShowSheet(false)}>
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3.5rem] p-8 shadow-[0_-20px_60px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-500"
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3.5rem] p-8 pb-32 shadow-[0_-20px_60px_rgba(0,0,0,0.3)] animate-in slide-in-from-bottom duration-500"
             onClick={e => e.stopPropagation()}
           >
             <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-8"></div>
